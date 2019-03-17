@@ -1,0 +1,68 @@
+version: '3'
+services:
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    container_name: survloop
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - survloop-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - survloop-network
+
+  #Composer
+  composer:
+      image: composer
+      volumes:
+          - .:/app
+      command: install
+
+  #Database
+  pgsql:
+      image: postgres:11.2
+      container_name: pgsql
+      restart: always
+      environment:
+          - POSTGRES_DB=${DB_DATABASE}
+          - POSTGRES_USER=${DB_USERNAME}
+          - POSTGRES_PASSWORD=${DB_PASSWORD}
+      ports:
+          - 5432:5432
+      volumes:
+          - dbdata:/var/lib/postgres
+          - ./.docker/conf/postgres/:/docker-entrypoint-initdb.d/
+
+#Docker Networks
+networks:
+  survloop-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
