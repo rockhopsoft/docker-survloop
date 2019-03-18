@@ -19,6 +19,8 @@ services:
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - survloop-network
+    depends_on:
+      - "webserver"
 
   #Nginx Service
   webserver:
@@ -34,13 +36,8 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - survloop-network
-
-  #Composer
-  composer:
-      image: composer
-      volumes:
-          - .:/app
-      command: install
+    depends_on:
+      - "pgsql"
 
   #Database
   pgsql:
@@ -56,6 +53,13 @@ services:
       volumes:
           - dbdata:/var/lib/postgres
           - ./.docker/conf/postgres/:/docker-entrypoint-initdb.d/
+
+  #Composer
+  composer:
+      image: composer
+      volumes:
+          - .:/app
+      command: install
 
 #Docker Networks
 networks:
