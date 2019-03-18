@@ -7,7 +7,7 @@ COPY composer.lock composer.json /var/www/
 WORKDIR /var/www
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade && apt-get install -y \
     build-essential \
     libpng-dev \
     libjpeg62-turbo-dev \
@@ -24,11 +24,14 @@ RUN apt-get update && apt-get install -y \
     git \
     curl
 
+# php7.3-mbstring
+#RUN docker-php-ext-install php7.3-mbstring
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
-RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip exif pcntl 
+RUN docker-php-ext-install pdo pdo_pgsql pgsql zip exif pcntl 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 RUN docker-php-ext-install -j$(nproc) iconv
 RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
@@ -42,30 +45,25 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 #     psql --command "CREATE USER {DB_USERNAME} WITH SUPERUSER PASSWORD '{DB_PASSWORD}';" &&\
 #     createdb -O {DB_DATABASE} {DB_USERNAME}
 
-# Double-check permissions needed to auto-install Laravel & SurvLoop
-RUN chown -R www-data:33 app
-RUN chown -R www-data:33 config
-RUN chown -R www-data:33 database
-RUN chown -R www-data:33 storage
-RUN chmod -R gu+w storage
-
 # Install composer and SurvLoop
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN php artisan key:generate
-RUN php artisan make:auth
-RUN composer update
+#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer require wikiworldorder/survloop
-RUN composer update
-RUN php artisan vendor:publish
-RUN php artisan migrate
-RUN php artisan optimize
-RUN composer dump-autoload
-RUN php artisan db:seed --class=SurvLoopSeeder
+#RUN php -d memory_limit=1024M composer require wikiworldorder/survloop
 
 # Copy existing application directory contents
 COPY . /var/www
 # Copy existing application directory permissions
 COPY --chown=www:www . /var/www
+
+# Double-check permissions needed to install and run Laravel and SurvLoop
+RUN mkdir /var/www/app/Models
+RUN mkdir /var/www/database/seeds
+RUN chmod -R gu+w www-data:33 /var/www/app/Models
+RUN chmod -R gu+w www-data:33 /var/www/app/User.php
+RUN chmod -R gu+w www-data:33 /var/www/config
+RUN chmod -R gu+w www-data:33 /var/www/database
+RUN chmod -R gu+w www-data:33 /var/www/storage/app
+
 # Change current user to www
 USER www
 # Expose port 9000 and start php-fpm server

@@ -21,6 +21,7 @@ services:
       - survloop-network
     depends_on:
       - "webserver"
+      - "composer"
 
   #Nginx Service
   webserver:
