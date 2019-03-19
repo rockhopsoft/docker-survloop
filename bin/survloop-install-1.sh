@@ -1,29 +1,19 @@
 #!/bin/bash
-echo Running SurvLoop Intaller!
+set -x
 
-ubuntuVersion=bionic
-dockerComposeVersion=1.23.2
+echo Running SurvLoop Intaller!.. Act 1
 
-sudo apt update
-sudo apt-get upgrade
+# Create swap file, important for servers with little memory
+/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
+/sbin/mkswap /var/swap.1
+/sbin/swapon /var/swap.1
 
-git clone https://github.com/laravel/laravel.git ~/survloop
-cd ~/survloop
-cp -rf /tmp/docker-survloop/{Dockerfile,docker-compose.yml,php,nginx} ./
+# Create non-root user
+adduser $1
+usermod -aG sudo $1
+ufw allow OpenSSH
+ufw enable
+rsync --archive --chown=$1:$1 ~/.ssh /home/$1
+#chmod +x $1:$1 /usr/local/lib/docker-survloop/bin/*.sh
 
-# Installing Docker
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $ubuntuVersion stable"
-sudo apt update
-sudo apt install docker-ce
-sudo usermod -aG docker ${USER}
-su - ${USER}
-sudo curl -L https://github.com/docker/compose/releases/download/$dockerComposeVersion/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker run --rm -v $(pwd):/app composer install
-sudo chown -R $USER:$USER ~/survloop
-cd ~/survloop
-cp .env.example .env
-mkdir /var/www/app/Models
-
+#cp /usr/local/lib/docker-survloop/etc/apt/sources.list /home/mo/survloop/

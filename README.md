@@ -30,6 +30,36 @@ You will need:
 ## How to use it
 
 
+
+
+<h1 class="slBlueDark">How To Install SurvLoop with Docker on Digital Ocean</h1>
+<p>This process runs a variety of <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-laravel-nginx-and-mysql-with-docker-compose" target="_blank">Digital Ocean's layered tutorials</a>. I don't understand all of it yet, so will leave the explanations to their superb articles. This variation uses PostgresSQL instead of MYSQL, and it also adds SurvLoop stuff. You should be able to accept the defaults.</p>
+<p>After starting up a new <b class="red">Ubuntu 18.04</b> Droplet, connect it with the root account and your SSH key. The first install script will create a non-root user, e.g. <span class="red">survuser</span>. Be sure to create and save a copy of a strong password, which you'll need handy throughout this install:</p>
+
+<pre>$ git clone https://github.com/wikiworldorder/docker-survloop.git /usr/local/lib/docker-survloop
+$ chmod +x /usr/local/lib/docker-survloop/bin/*.sh
+$ /usr/local/lib/docker-survloop/bin/survloop-install-1.sh <span class="red">survuser</span>
+</pre>
+<p>Then exit to logout as root, and log back in as <span class="red">survuser</span>. Your key should work, and you should have sudo power.</p>
+<pre>$ exit
+# ssh <span class="red">survuser</span>@<span class="red">YOUR.SERVER.IP</span>
+</pre>
+<h3 class="slBlueDark">Now logged in as a non-root user</h3>
+<pre>$ sudo chmod +x /usr/local/lib/docker-survloop/bin/*.sh
+$ bash /usr/local/lib/docker-survloop/bin/survloop-install-2.sh
+$ cd ~/survloop
+$ docker run --rm -v $(pwd):/app composer install
+$ docker-compose up -d
+$ docker-compose exec app nano .env
+</pre>
+<p>Update the .env file for your system with a database password you can create now...</p>
+<pre>DB_PASSWORD=survlooppass</pre>
+<p>Add on SurvLoop package...</p>
+<pre>$ bash /usr/local/lib/docker-survloop/bin/survloop-install-3.sh
+</pre>
+
+
+
 ### Starting Docker Compose
 
 Checkout the repository or download the sources.

@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: digitalocean.com/php
-    container_name: survloop
+    container_name: app
     restart: unless-stopped
     tty: true
     environment:
@@ -21,7 +21,6 @@ services:
       - survloop-network
     depends_on:
       - "webserver"
-      - "composer"
 
   #Nginx Service
   webserver:
@@ -54,13 +53,6 @@ services:
       volumes:
           - dbdata:/var/lib/postgres
           - ./.docker/conf/postgres/:/docker-entrypoint-initdb.d/
-
-  #Composer
-  composer:
-      image: composer
-      volumes:
-          - .:/app
-      command: install
 
 #Docker Networks
 networks:
