@@ -1,0 +1,27 @@
+{
+    "name": "wikiworldorder/docker-survloop",
+    "description": "Docker Compose configuration for SurvLoop ^0.1 running PHP 7.3 with Nginx, PHP-FPM, PostgreSQL 11.2 and Composer.",
+    "keywords": [
+        "SurvLoop", 
+        "survey", 
+        "database designer", 
+        "user experience", 
+        "forms", 
+        "mobile friendly", 
+        "mobile first", 
+        "branching tree",
+        "nodes",
+        "content management system",
+        "open source",
+        "Laravel"
+    ],
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Morgan Lesko",
+            "homepage": "https://github.com/wikiworldorder/survloop",
+            "email": "wikiworldorder@protonmail.com",
+            "role": "Developer"
+        }
+    ]
+}
