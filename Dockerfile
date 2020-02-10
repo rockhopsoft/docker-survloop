@@ -60,8 +60,8 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 
 # Install composer and SurvLoop
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer require wikiworldorder/survloop
-#RUN php -d memory_limit=1024M composer require wikiworldorder/survloop
+RUN composer require rockhopsoft/survloop
+#RUN php -d memory_limit=1024M composer require rockhopsoft/survloop
 
 # Copy existing application directory contents
 COPY . /var/www

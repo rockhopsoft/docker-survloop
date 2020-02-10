@@ -11,13 +11,13 @@ php artisan key:generate
 php artisan make:auth
 
 # Install SurvLoop
-composer require wikiworldorder/survloop
+composer require rockhopsoft/survloop
 
 composer dump-autoload
 php artisan optimize
 
 # Install SurvLoop user model
-#cp vendor/wikiworldorder/survloop/src/Models/User.php app/User.php
+#cp vendor/rockhopsoft/survloop/src/Models/User.php app/User.php
 #sed -i 's/namespace App\\Models;/namespace App;/g' app/User.php
 sed -i 's/App\\User::class/App\\Models\\User::class/g' config/auth.php
 
